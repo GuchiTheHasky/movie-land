@@ -26,6 +26,7 @@ alter sequence genres_id_sequence owned by genres.id;
 
 
 create sequence countries_id_sequence
+    START WITH 1
     increment by 1;
 
 alter sequence countries_id_sequence owned by countries.id;
