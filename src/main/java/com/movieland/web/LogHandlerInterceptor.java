@@ -46,12 +46,12 @@ public class LogHandlerInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, ModelAndView modelAndView) {
-        throw new NotImplementedException("Method \"postHandle(HttpServletRequest, HttpServletResponse, Object, ModelAndView);\" not implemented yet.");
+        //throw new NotImplementedException("Method \"postHandle(HttpServletRequest, HttpServletResponse, Object, ModelAndView);\" not implemented yet.");
     }
 
     @Override
     public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, Exception ex) {
-        throw new NotImplementedException("Method \"afterCompletion(HttpServletRequest, HttpServletResponse, Object, Exception);\" not implemented yet.");
+        //throw new NotImplementedException("Method \"afterCompletion(HttpServletRequest, HttpServletResponse, Object, Exception);\" not implemented yet.");
     }
 
     private String generateRandomUUID() {
