@@ -1,8 +1,4 @@
 spring:
-  datasource:
-    username: postgres
-    password: root
-    url: jdbc:postgresql://localhost:5432/movieland
   jpa:
     hibernate:
       ddl-auto: validate
@@ -13,22 +9,10 @@ spring:
     show-sql: true
 
     open-in-view: false
-  redis:
-    data:
-      host: 127.0.0.1
-      port: 6379
 
-jwt:
-  key: f31452045b7a2c118febfdfd51bda9e73d61321fa09ebca24305997d8f7c95fe
 
-genres:
-  cache:
-    fixed-rate: 4
-    fixed-delay: 4
 
-nbu:
-  currency:
-    url: https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange
-    cache:
-      tomorrow: "0 0 17 * * *"
-      invalidate: "0 0 0 * * ?"
+
+
+
+

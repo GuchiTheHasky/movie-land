@@ -1,4 +1,5 @@
-alter table if exists users add column role varchar(255);
+alter table if exists users
+    add column role varchar(255);
 
 create sequence reviews_id_sequence
     increment by 1;

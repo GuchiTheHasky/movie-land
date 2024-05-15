@@ -10,21 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping(value = "/api/v1/genre")
 public class GenreController {
 
     private final GenreService genreService;
-
 
     @GetMapping
     public List<GenreDto> findAllGenres() {
         log.info("Getting all genres");
         return genreService.findAll();
     }
-
 }
 
 

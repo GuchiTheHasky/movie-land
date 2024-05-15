@@ -23,7 +23,7 @@ public class DefaultReviewService implements ReviewService {
     private final UserService userService;
     private final ReviewRepository reviewRepository;
 
-        @Override
+    @Override
     public void saveReview(ReviewToSaveDto reviewToSaveDto, String authHeader) {
         String token = authHeader.replaceFirst(BEARER, StringUtils.EMPTY);
         User user = userService.findByEmail(jwtService.extractUsername(token));

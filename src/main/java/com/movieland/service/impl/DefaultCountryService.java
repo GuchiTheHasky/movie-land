@@ -14,7 +14,6 @@ public class DefaultCountryService implements CountryService {
 
     private final CountryRepository countryRepository;
 
-
     @Override
     public List<Country> findAllCountriesById(List<Integer> countryIds) {
         return countryRepository.findAllById(countryIds);

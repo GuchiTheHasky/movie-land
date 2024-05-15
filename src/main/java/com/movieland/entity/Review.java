@@ -21,7 +21,7 @@ public class Review {
 
     @OneToOne
     @JoinColumn(name = "user_id",
-    referencedColumnName = "id")
+            referencedColumnName = "id")
     private User user;
 
     @Column(name = "text")

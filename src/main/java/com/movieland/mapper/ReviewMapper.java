@@ -14,10 +14,4 @@ public interface ReviewMapper {
     List<ReviewDto> toReviewDto(List<Review> reviews);
 
 
-
-
-
-
-
-
 }

@@ -34,3 +34,4 @@ build/
 
 ### misc ###
 logs
+/src/main/resources/application-dev.yml

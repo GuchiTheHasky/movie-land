@@ -5,6 +5,7 @@ import com.movieland.dto.MovieAdminDto;
 import com.movieland.entity.Movie;
 import com.movieland.repository.MovieRepository;
 import com.movieland.service.CountryService;
+import com.movieland.service.CurrencyConverterService;
 import com.movieland.service.GenreService;
 import com.movieland.service.MovieService;
 import com.movieland.web.controller.validation.SortOrderPrice;
@@ -18,20 +19,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class DefaultMovieService implements MovieService {
 
     private final MovieRepository movieRepository;
-    private final com.movieland.service.CurrencyConverterService CurrencyConverterService;
+    private final CurrencyConverterService currencyConverterService;
     private final GenreService genreService;
     private final CountryService countryService;
 
 
     @Override
     public List<Movie> findAllMovies(SortOrderRating rating, SortOrderPrice price) {
-
         Pair<String, String> validateQuery = validateQuery(rating, price);
         String sortBy = validateQuery.getLeft();
         String sortOrder = validateQuery.getRight();
@@ -41,7 +41,6 @@ public class DefaultMovieService implements MovieService {
 
     @Override
     public List<Movie> findMoviesByGenre(int genreId, SortOrderRating rating, SortOrderPrice price) {
-
         Pair<String, String> validateQuery = validateQuery(rating, price);
         String sortBy = validateQuery.getLeft();
         String sortOrder = validateQuery.getRight();
@@ -55,7 +54,7 @@ public class DefaultMovieService implements MovieService {
         if (movieOptional.isPresent()) {
             Movie movie = movieOptional.get();
             if (currency != null) {
-                double price = CurrencyConverterService.convertFromUah(movie.getPrice(), currency);
+                double price = currencyConverterService.convertFromUah(movie.getPrice(), currency);
                 movie.setPrice(price);
                 return movie;
             }
@@ -95,10 +94,10 @@ public class DefaultMovieService implements MovieService {
 
         Movie movie = findMovieByReferenceId(id);
 
-        if(movieAdminDto.getNameRussian() != null) {
+        if (movieAdminDto.getNameRussian() != null) {
             movie.setNameRussian(movieAdminDto.getNameRussian());
         }
-        if(movieAdminDto.getNameNative() != null) {
+        if (movieAdminDto.getNameNative() != null) {
             movie.setNameNative(movieAdminDto.getNameNative());
         }
         if (movieAdminDto.getPicturePath() != null) {
@@ -107,19 +106,19 @@ public class DefaultMovieService implements MovieService {
         if (movieAdminDto.getYearOfRelease() != 0) {
             movie.setYearOfRelease(movieAdminDto.getYearOfRelease());
         }
-        if(movieAdminDto.getRating() != null) {
+        if (movieAdminDto.getRating() != null) {
             movie.setRating(movieAdminDto.getRating());
         }
-        if(movieAdminDto.getPrice() != null) {
+        if (movieAdminDto.getPrice() != null) {
             movie.setPrice(movieAdminDto.getPrice());
         }
-        if(movieAdminDto.getDescription() != null) {
+        if (movieAdminDto.getDescription() != null) {
             movie.setDescription(movieAdminDto.getDescription());
         }
-        if(movieAdminDto.getGenres() != null) {
+        if (movieAdminDto.getGenres() != null) {
             movie.setGenres(genreService.findALlById(movieAdminDto.getGenres()));
         }
-        if(movieAdminDto.getCountries() != null) {
+        if (movieAdminDto.getCountries() != null) {
             movie.setCountries(countryService.findAllCountriesById(movieAdminDto.getCountries()));
         }
 

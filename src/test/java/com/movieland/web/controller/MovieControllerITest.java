@@ -27,16 +27,16 @@ class MovieControllerITest extends AbstractBaseITest {
     private static final String ALL_MOVIES_BY_GENRE_DRAMA_RATING_DESC_API = "/api/v1/movies/genre/1?rating=desc";
     private static final String FIND_MOVIE_BY_ID_API = "/api/v1/movies/1";
     private static final String MOVIE_CONTENT_JSON = "{\n" +
-            "     \"nameRussian\": \"Побег из Шоушенка\",\n" +
-            "     \"nameNative\": \"The Shawshank Redemption\",\n" +
-            "     \"yearOfRelease\": \"1994\",\n" +
-            "     \"description\": \"Успешный банкир Энди Дюфрейн обвинен в убийстве собственной жены и ее любовника. Оказавшись в тюрьме под названием Шоушенк, он сталкивается с жестокостью и беззаконием, царящими по обе стороны решетки. Каждый, кто попадает в эти стены, становится их рабом до конца жизни. Но Энди, вооруженный живым умом и доброй душой, отказывается мириться с приговором судьбы и начинает разрабатывать невероятно дерзкий план своего освобождения.\",\n" +
-            "     \"price\": 123.45,\n" +
-            "     \"rating\": 8.9,\n" +
-            "     \"picturePath\": \"https://images-na.ssl-images-amazon.com/images/M/MV5BODU4MjU4NjIwNl5BMl5BanBnXkFtZTgwMDU2MjEyMDE@._V1._SY209_CR0,0,140,209_.jpg\",\n" +
-            "     \"countries\": [1,2],\n" +
-            "     \"genres\": [1,2,3]\n" +
-            "}";
+                                                     "     \"nameRussian\": \"Побег из Шоушенка\",\n" +
+                                                     "     \"nameNative\": \"The Shawshank Redemption\",\n" +
+                                                     "     \"yearOfRelease\": \"1994\",\n" +
+                                                     "     \"description\": \"Успешный банкир Энди Дюфрейн обвинен в убийстве собственной жены и ее любовника. Оказавшись в тюрьме под названием Шоушенк, он сталкивается с жестокостью и беззаконием, царящими по обе стороны решетки. Каждый, кто попадает в эти стены, становится их рабом до конца жизни. Но Энди, вооруженный живым умом и доброй душой, отказывается мириться с приговором судьбы и начинает разрабатывать невероятно дерзкий план своего освобождения.\",\n" +
+                                                     "     \"price\": 123.45,\n" +
+                                                     "     \"rating\": 8.9,\n" +
+                                                     "     \"picturePath\": \"https://images-na.ssl-images-amazon.com/images/M/MV5BODU4MjU4NjIwNl5BMl5BanBnXkFtZTgwMDU2MjEyMDE@._V1._SY209_CR0,0,140,209_.jpg\",\n" +
+                                                     "     \"countries\": [1,2],\n" +
+                                                     "     \"genres\": [1,2,3]\n" +
+                                                     "}";
 
 
     //JSONs

@@ -14,15 +14,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
 @Slf4j
+@RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/movies")
 public class MovieController {
 
     private final MovieService movieService;
     private final MovieMapper movieMapper;
-
 
     @GetMapping
     public List<MovieDto> findAllMovies(
@@ -52,44 +51,20 @@ public class MovieController {
     }
 
     @PostMapping
-    public void saveMovie(
-            @RequestBody MovieAdminDto MovieAdminDto
-    ) {
+    public void saveMovie(@RequestBody MovieAdminDto movieAdminDto) {
         log.info("Saving movie");
-        movieService.saveMovie(MovieAdminDto);
-
-
+        movieService.saveMovie(movieAdminDto);
     }
 
     @PutMapping("/{id}")
-    public void editMovie(
-            @PathVariable int id,
-            @RequestBody MovieAdminDto movieAdminDto
-    ) {
+    public void editMovie(@PathVariable int id, @RequestBody MovieAdminDto movieAdminDto) {
         log.info("Editing movie");
         movieService.editMovie(movieAdminDto, id);
-
-
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMovie(
-            @PathVariable int id
-    ) {
+    public void deleteMovie(@PathVariable int id) {
         log.info("Deleting movie");
         movieService.deleteMovie(id);
-
-
     }
-
-
 }
-
-
-
-
-
-
-
-
-

@@ -30,7 +30,8 @@ public class NbuCurrencyRatesService {
         String date = "?date=" + dateString + "&json";
         stringJoiner.add(nbuRatesUrl);
         stringJoiner.add(date);
-        NbuRateDto[] nbuRates= restClient.get().uri(stringJoiner.toString()).accept(MediaType.APPLICATION_JSON).retrieve().body(NbuRateDto[].class);
+        NbuRateDto[] nbuRates = restClient.get().uri(stringJoiner.toString()).accept(MediaType.APPLICATION_JSON).retrieve().body(NbuRateDto[].class);
+        assert nbuRates != null;
         return Arrays.asList(nbuRates);
     }
 
@@ -41,7 +42,8 @@ public class NbuCurrencyRatesService {
         String date = "?date=" + dateString + "&json";
         stringJoiner.add(nbuRatesUrl);
         stringJoiner.add(date);
-        NbuRateDto[] nbuRates= restClient.get().uri(stringJoiner.toString()).accept(MediaType.APPLICATION_JSON).retrieve().body(NbuRateDto[].class);
+        NbuRateDto[] nbuRates = restClient.get().uri(stringJoiner.toString()).accept(MediaType.APPLICATION_JSON).retrieve().body(NbuRateDto[].class);
+        assert nbuRates != null;
         return Arrays.asList(nbuRates);
     }
 

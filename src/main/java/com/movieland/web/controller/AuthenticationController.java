@@ -10,25 +10,21 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping(value = "/api/v1")
 public class AuthenticationController {
 
     private final AuthenticationService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody UserRegistrationDto userRegistrationDto
-    ) {
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody UserRegistrationDto userRegistrationDto) {
         return ResponseEntity.ok(authService.register(userRegistrationDto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(
-            @RequestBody AuthRequest authRequest
-    ) {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthRequest authRequest) {
         log.info("logging in for user {}", authRequest.getEmail());
         return ResponseEntity.ok(authService.authenticate(authRequest));
     }

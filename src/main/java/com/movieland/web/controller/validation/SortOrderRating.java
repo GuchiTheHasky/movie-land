@@ -7,7 +7,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum SortOrderRating {
-
     DESC
-
 }

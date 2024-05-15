@@ -81,8 +81,8 @@ public class AuthenticationControllerTest extends AbstractBaseITest {
             cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
     public void testLoginWithWrongCredentialsReceiveBadRequest() throws Exception {
         assertThrows(ServletException.class, () -> mockMvc.perform(post(LOGIN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(AUTH_REQUEST_BAD_CREDENTIALS_JSON)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(AUTH_REQUEST_BAD_CREDENTIALS_JSON)));
 
     }
 
