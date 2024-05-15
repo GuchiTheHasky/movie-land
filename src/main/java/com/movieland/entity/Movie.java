@@ -21,7 +21,6 @@ import java.util.List;
 public class Movie {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movies_id_sequence")
     @SequenceGenerator(name = "movies_id_sequence", sequenceName = "movies_id_sequence", allocationSize = 1)
     private int id;
