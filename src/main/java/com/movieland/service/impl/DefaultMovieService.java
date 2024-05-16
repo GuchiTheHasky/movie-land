@@ -2,12 +2,18 @@ package com.movieland.service.impl;
 
 import com.movieland.common.Currency;
 import com.movieland.dto.MovieAdminDto;
+import com.movieland.dto.MovieFullInfoDto;
+import com.movieland.entity.Country;
+import com.movieland.entity.Genre;
 import com.movieland.entity.Movie;
+import com.movieland.entity.Review;
+import com.movieland.exception.MovieNotFoundException;
+import com.movieland.mapper.MovieMapper;
+import com.movieland.repository.CountryRepository;
+import com.movieland.repository.GenreRepository;
 import com.movieland.repository.MovieRepository;
-import com.movieland.service.CountryService;
-import com.movieland.service.CurrencyConverterService;
-import com.movieland.service.GenreService;
-import com.movieland.service.MovieService;
+import com.movieland.repository.ReviewRepository;
+import com.movieland.service.*;
 import com.movieland.web.controller.validation.SortOrderPrice;
 import com.movieland.web.controller.validation.SortOrderRating;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +24,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DefaultMovieService implements MovieService {
 
-    private final MovieRepository movieRepository;
     private final CurrencyConverterService currencyConverterService;
     private final GenreService genreService;
     private final CountryService countryService;
+
+    private final GenreRepository genreRepository;
+    private final ReviewRepository reviewRepository;
+
+    private final MovieRepository movieRepository;
+    private final MovieMapper movieMapper;
+
+    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final CountryRepository countryRepository;
 
 
     @Override
@@ -49,18 +64,32 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
-    public Movie findMovieById(int movieId, Currency currency) {
+    public MovieFullInfoDto findFullMovieInfoById(int movieId, Currency currency) {
         Optional<Movie> movieOptional = movieRepository.findById(movieId);
-        if (movieOptional.isPresent()) {
-            Movie movie = movieOptional.get();
-            if (currency != null) {
-                double price = currencyConverterService.convertFromUah(movie.getPrice(), currency);
-                movie.setPrice(price);
-                return movie;
-            }
-            return movie;
+        if (movieOptional.isEmpty()) {
+            throw new MovieNotFoundException(movieId);
         }
-        return null;
+
+        Movie movie = movieOptional.get();
+        if (currency != null) {
+            double price = currencyConverterService.convertFromUah(movie.getPrice(), currency);
+            movie.setPrice(price);
+        }
+
+        Future<List<Genre>> genresFuture = executor.submit(() -> genreRepository.findByMovieId(movieId));
+        Future<List<Country>> countriesFuture = executor.submit(() -> countryRepository.findByMovieId(movieId));
+        Future<List<Review>> reviewsFuture = executor.submit(() -> reviewRepository.findByMovieId(movieId));
+
+        try {
+            movie.setGenres(genresFuture.get(5, TimeUnit.SECONDS));
+            movie.setCountries(countriesFuture.get(5, TimeUnit.SECONDS));
+            movie.setReviews(reviewsFuture.get(5, TimeUnit.SECONDS));
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            Thread.currentThread().interrupt();
+            log.error("Error fetching data within timeout: ", e);
+        }
+
+        return movieMapper.toMovieExtendedDto(movie);
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class MovieExtendedDto {
+public class MovieFullInfoDto {
 
     private int id;
 

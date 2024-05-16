@@ -2,7 +2,7 @@ package com.movieland.web.controller;
 
 import com.movieland.common.Currency;
 import com.movieland.dto.MovieAdminDto;
-import com.movieland.dto.MovieExtendedDto;
+import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.mapper.MovieMapper;
 import com.movieland.web.controller.validation.SortOrderPrice;
 import com.movieland.web.controller.validation.SortOrderRating;
@@ -44,10 +44,10 @@ public class MovieController {
     }
 
     @GetMapping("/{movieId}")
-    public MovieExtendedDto findMoviesById(
+    public MovieFullInfoDto findMoviesById(
             @PathVariable int movieId,
             @RequestParam(required = false) Currency currency) {
-        return movieMapper.toMovieExtendedDto(movieService.findMovieById(movieId, currency));
+        return movieService.findFullMovieInfoById(movieId, currency);
     }
 
     @PostMapping
