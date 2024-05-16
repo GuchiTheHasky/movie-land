@@ -1,7 +1,10 @@
 package com.movieland.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,4 +23,11 @@ public class Country {
 
     @Column(name = "name")
     private String name;
+
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(name = "movies_countries_map",
+            joinColumns = @JoinColumn(name = "country_id"),
+            inverseJoinColumns = @JoinColumn(name = "movie_id"))
+    private List<Movie> movies;
 }

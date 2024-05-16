@@ -1,7 +1,7 @@
 package com.movieland.service.impl;
 
 import com.movieland.entity.Country;
-import com.movieland.service.CountryRepository;
+import com.movieland.repository.CountryRepository;
 import com.movieland.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
