@@ -2,7 +2,9 @@ package com.movieland.dto;
 
 import com.movieland.entity.Country;
 import com.movieland.entity.Genre;
-import lombok.*;
+import lombok.Setter;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.List;
 

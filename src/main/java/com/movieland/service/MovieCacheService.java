@@ -4,10 +4,10 @@ import com.movieland.common.Currency;
 import com.movieland.dto.MovieFullInfoDto;
 import org.springframework.scheduling.annotation.Scheduled;
 
-public interface MovieCache {
+public interface MovieCacheService {
     MovieFullInfoDto getFromCache(int movieId, Currency currency);
 
-    MovieFullInfoDto saveToCache(int movieId, MovieFullInfoDto movie);
+    MovieFullInfoDto handleCacheIfAbsent(int movieId, MovieFullInfoDto movie);
 
     @Scheduled(cron = "${cron.each.midnight}")
     void cleanUpCache();

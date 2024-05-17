@@ -1,6 +1,7 @@
 package com.movieland.service;
 
 import com.movieland.dto.MovieAdminDto;
+import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.web.controller.validation.SortOrderPrice;
 import com.movieland.web.controller.validation.SortOrderRating;
 import com.movieland.entity.Movie;
@@ -17,13 +18,11 @@ public interface MovieService {
 
     Movie findMovieById(int movieId);
 
-    //MovieFullInfoDto findFullMovieInfoById(int movieId, Currency currencyValidation);
-
     void saveMovie(MovieAdminDto movieAdminDto);
 
-    void saveMovie(Movie movie);
-
     Movie updateMovie(int id, MovieAdminDto movieAdminDto);
+
+    MovieFullInfoDto mapToMovieFullInfoDto(Movie movie);
 
     void deleteMovie(int id);
 
