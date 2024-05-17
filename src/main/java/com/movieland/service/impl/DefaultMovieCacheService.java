@@ -23,10 +23,10 @@ public class DefaultMovieCacheService implements MovieCacheService {
 
     @Override
     public MovieFullInfoDto getFromCache(int movieId, Currency currency) {
-        SoftReference<MovieFullInfoDto> ref = movieCache.get(movieId);
+        SoftReference<MovieFullInfoDto> reference = movieCache.get(movieId);
 
-        if (ref != null) {
-            MovieFullInfoDto cachedMovie = ref.get();
+        if (reference != null) {
+            MovieFullInfoDto cachedMovie = reference.get();
                 if (currency != null) {
                     double price = currencyConverterService.convertFromUah(cachedMovie.getPrice(), currency);
                     cachedMovie.setPrice(price);
