@@ -1,5 +1,6 @@
 package com.movieland.repository.impl;
 
+import com.movieland.entity.Country;
 import com.movieland.entity.Genre;
 import com.movieland.entity.Movie;
 import com.movieland.repository.MovieRepositoryCustom;
@@ -66,6 +67,23 @@ public class MovieRepositoryCustomImpl implements MovieRepositoryCustom {
         }
         TypedQuery<Movie> query = entityManager.createQuery(criteriaQuery);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Country> findCountryByMovieId(int movieId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Country> query = criteriaBuilder.createQuery(Country.class);
+        Root<Country> country = query.from(Country.class);
+
+        Subquery<Integer> subquery = query.subquery(Integer.class);
+        Root<Country> subCountry = subquery.from(Country.class);
+        Join<Country, Movie> movies = subCountry.join("movies", JoinType.INNER);
+
+        subquery.select(subCountry.get("id")).where(criteriaBuilder.equal(movies.get("id"), movieId));
+
+        query.select(country).where(criteriaBuilder.in(country.get("id")).value(subquery));
+
+        return entityManager.createQuery(query).getResultList();
     }
 
 }

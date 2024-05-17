@@ -10,4 +10,5 @@ public interface GenreService {
 
     List<Genre> findALlById(List<Integer> genreId);
 
+    List<Genre> findByMovieId(int movieId);
 }

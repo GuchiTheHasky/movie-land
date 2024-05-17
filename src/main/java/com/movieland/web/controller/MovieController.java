@@ -2,7 +2,8 @@ package com.movieland.web.controller;
 
 import com.movieland.common.Currency;
 import com.movieland.dto.MovieAdminDto;
-import com.movieland.dto.MovieExtendedDto;
+import com.movieland.dto.MovieFullInfoDto;
+import com.movieland.facade.MovieFacade;
 import com.movieland.mapper.MovieMapper;
 import com.movieland.web.controller.validation.SortOrderPrice;
 import com.movieland.web.controller.validation.SortOrderRating;
@@ -22,6 +23,8 @@ public class MovieController {
 
     private final MovieService movieService;
     private final MovieMapper movieMapper;
+
+    private final MovieFacade movieFacade;
 
     @GetMapping
     public List<MovieDto> findAllMovies(
@@ -44,22 +47,22 @@ public class MovieController {
     }
 
     @GetMapping("/{movieId}")
-    public MovieExtendedDto findMoviesById(
+    public MovieFullInfoDto findMovieById(
             @PathVariable int movieId,
             @RequestParam(required = false) Currency currency) {
-        return movieMapper.toMovieExtendedDto(movieService.findMovieById(movieId, currency));
+        return movieFacade.findFullMovieInfoById(movieId, currency);
+    }
+
+    @PutMapping("/{id}")
+    public MovieFullInfoDto updateMovie(@PathVariable int id, @RequestBody MovieAdminDto movieAdminDto) {
+        log.info("Updating movie");
+        return movieFacade.update(id, movieAdminDto);
     }
 
     @PostMapping
     public void saveMovie(@RequestBody MovieAdminDto movieAdminDto) {
         log.info("Saving movie");
         movieService.saveMovie(movieAdminDto);
-    }
-
-    @PutMapping("/{id}")
-    public void editMovie(@PathVariable int id, @RequestBody MovieAdminDto movieAdminDto) {
-        log.info("Editing movie");
-        movieService.editMovie(movieAdminDto, id);
     }
 
     @DeleteMapping("/{id}")

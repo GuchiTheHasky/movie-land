@@ -17,5 +17,4 @@ public class NbuCurrencyConverterService implements CurrencyConverterService {
         double rate = currencyRateCache.getRate(currency);
         return price / rate;
     }
-
 }

@@ -1,14 +1,6 @@
-spring:
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-    show-sql: true
+server:
+  port: 3001
 
-    open-in-view: false
 
 
 

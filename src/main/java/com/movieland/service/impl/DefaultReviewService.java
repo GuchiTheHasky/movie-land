@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.movieland.service.impl.AuthenticationService.BEARER;
 
 @Service
@@ -38,5 +40,8 @@ public class DefaultReviewService implements ReviewService {
         reviewRepository.save(review);
     }
 
-
+    @Override
+    public List<Review> findByMovieId(int movieId) {
+        return reviewRepository.findByMovieId(movieId);
+    }
 }
