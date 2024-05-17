@@ -1,6 +1,7 @@
 package com.movieland.service.impl;
 
 import com.movieland.dto.MovieAdminDto;
+import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.entity.Country;
 import com.movieland.entity.Genre;
 import com.movieland.entity.Movie;
@@ -80,12 +81,6 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
-    public void saveMovie(Movie movie) {
-
-        movieRepository.save(movie);
-    }
-
-    @Override
     @Transactional
     public Movie updateMovie(int id, MovieAdminDto movieAdminDto) {
         Movie movie = findMovieByReferenceId(id);
@@ -94,6 +89,11 @@ public class DefaultMovieService implements MovieService {
         List<Country> countries = countryService.findAllCountriesById(movieAdminDto.getCountries());
 
         return movieRepository.save(movieMapper.update(movie, movieAdminDto, countries, genres));
+    }
+
+    @Override
+    public MovieFullInfoDto mapToMovieFullInfoDto(Movie movie) {
+        return movieMapper.toMovieFullInfoDto(movie);
     }
 
     @Override
@@ -130,6 +130,4 @@ public class DefaultMovieService implements MovieService {
     }
 
 }
-
-
 

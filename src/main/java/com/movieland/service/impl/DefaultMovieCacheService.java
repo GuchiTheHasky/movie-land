@@ -4,7 +4,7 @@ import com.movieland.common.Currency;
 import com.movieland.common.annotations.Cache;
 import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.service.CurrencyConverterService;
-import com.movieland.service.MovieCache;
+import com.movieland.service.MovieCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,12 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Cache
 @RequiredArgsConstructor
-public class DefaultMovieCache implements MovieCache {
+public class DefaultMovieCacheService implements MovieCacheService {
 
     private final CurrencyConverterService currencyConverterService;
 
     private final ConcurrentHashMap<Integer, SoftReference<MovieFullInfoDto>> movieCache = new ConcurrentHashMap<>();
-
 
     @Override
     public MovieFullInfoDto getFromCache(int movieId, Currency currency) {
@@ -38,7 +37,7 @@ public class DefaultMovieCache implements MovieCache {
     }
 
     @Override
-    public MovieFullInfoDto saveToCache(int movieId, MovieFullInfoDto movie) {
+    public MovieFullInfoDto handleCacheIfAbsent(int movieId, MovieFullInfoDto movie) {
         movieCache.putIfAbsent(movieId, new SoftReference<>(movie));
         return movie;
     }
