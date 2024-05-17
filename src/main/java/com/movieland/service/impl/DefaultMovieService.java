@@ -1,19 +1,15 @@
 package com.movieland.service.impl;
 
-import com.movieland.common.Currency;
 import com.movieland.dto.MovieAdminDto;
-import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.entity.Country;
 import com.movieland.entity.Genre;
 import com.movieland.entity.Movie;
-import com.movieland.entity.Review;
 import com.movieland.exception.MovieNotFoundException;
 import com.movieland.mapper.MovieMapper;
-import com.movieland.repository.CountryRepository;
-import com.movieland.repository.GenreRepository;
 import com.movieland.repository.MovieRepository;
-import com.movieland.repository.ReviewRepository;
-import com.movieland.service.*;
+import com.movieland.service.CountryService;
+import com.movieland.service.GenreService;
+import com.movieland.service.MovieService;
 import com.movieland.web.controller.validation.SortOrderPrice;
 import com.movieland.web.controller.validation.SortOrderRating;
 import lombok.RequiredArgsConstructor;
@@ -24,25 +20,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DefaultMovieService implements MovieService {
 
-    private final CurrencyConverterService currencyConverterService;
     private final GenreService genreService;
     private final CountryService countryService;
 
-    private final GenreRepository genreRepository;
-    private final ReviewRepository reviewRepository;
-
     private final MovieRepository movieRepository;
     private final MovieMapper movieMapper;
-
-    private final ExecutorService executor = Executors.newCachedThreadPool();
-    private final CountryRepository countryRepository;
 
 
     @Override
@@ -64,32 +52,12 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
-    public MovieFullInfoDto findFullMovieInfoById(int movieId, Currency currency) {
+    public Movie findMovieById(int movieId) {
         Optional<Movie> movieOptional = movieRepository.findById(movieId);
         if (movieOptional.isEmpty()) {
             throw new MovieNotFoundException(movieId);
         }
-
-        Movie movie = movieOptional.get();
-        if (currency != null) {
-            double price = currencyConverterService.convertFromUah(movie.getPrice(), currency);
-            movie.setPrice(price);
-        }
-
-        Future<List<Genre>> genresFuture = executor.submit(() -> genreRepository.findByMovieId(movieId));
-        Future<List<Country>> countriesFuture = executor.submit(() -> countryRepository.findByMovieId(movieId));
-        Future<List<Review>> reviewsFuture = executor.submit(() -> reviewRepository.findByMovieId(movieId));
-
-        try {
-            movie.setGenres(genresFuture.get(5, TimeUnit.SECONDS));
-            movie.setCountries(countriesFuture.get(5, TimeUnit.SECONDS));
-            movie.setReviews(reviewsFuture.get(5, TimeUnit.SECONDS));
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            Thread.currentThread().interrupt();
-            log.error("Error fetching data within timeout: ", e);
-        }
-
-        return movieMapper.toMovieExtendedDto(movie);
+        return movieOptional.get();
     }
 
     @Override
@@ -119,40 +87,13 @@ public class DefaultMovieService implements MovieService {
 
     @Override
     @Transactional
-    public void editMovie(MovieAdminDto movieAdminDto, int id) {
-
+    public Movie updateMovie(int id, MovieAdminDto movieAdminDto) {
         Movie movie = findMovieByReferenceId(id);
 
-        if (movieAdminDto.getNameRussian() != null) {
-            movie.setNameRussian(movieAdminDto.getNameRussian());
-        }
-        if (movieAdminDto.getNameNative() != null) {
-            movie.setNameNative(movieAdminDto.getNameNative());
-        }
-        if (movieAdminDto.getPicturePath() != null) {
-            movie.setPicturePath(movieAdminDto.getPicturePath());
-        }
-        if (movieAdminDto.getYearOfRelease() != 0) {
-            movie.setYearOfRelease(movieAdminDto.getYearOfRelease());
-        }
-        if (movieAdminDto.getRating() != null) {
-            movie.setRating(movieAdminDto.getRating());
-        }
-        if (movieAdminDto.getPrice() != null) {
-            movie.setPrice(movieAdminDto.getPrice());
-        }
-        if (movieAdminDto.getDescription() != null) {
-            movie.setDescription(movieAdminDto.getDescription());
-        }
-        if (movieAdminDto.getGenres() != null) {
-            movie.setGenres(genreService.findALlById(movieAdminDto.getGenres()));
-        }
-        if (movieAdminDto.getCountries() != null) {
-            movie.setCountries(countryService.findAllCountriesById(movieAdminDto.getCountries()));
-        }
+        List<Genre> genres = genreService.findALlById(movieAdminDto.getGenres());
+        List<Country> countries = countryService.findAllCountriesById(movieAdminDto.getCountries());
 
-        movieRepository.save(movie);
-
+        return movieRepository.save(movieMapper.update(movie, movieAdminDto, countries, genres));
     }
 
     @Override
