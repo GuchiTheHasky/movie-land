@@ -24,9 +24,6 @@ public class DefaultEnrichmentService implements EnrichmentService {
 
     @Override
     public Movie enrichAdditionalInfo(Movie movie, EnrichmentType... enrichmentTypes) {
-        log.info("========================");
-        log.info("primary");
-        log.info("========================");
         Map<EnrichmentType, List<?>> map = getAdditionalList(movie, enrichmentTypes);
 
         List<Genre> genres = (List<Genre>) getAdditionalInfoByType(EnrichmentType.GENRE, map);
@@ -37,7 +34,7 @@ public class DefaultEnrichmentService implements EnrichmentService {
     }
 
     private Map<EnrichmentType, List<?>> getAdditionalList(Movie movie, EnrichmentType[] enrichmentTypes) {
-        Map<EnrichmentType, List<?>> map = new HashMap<>();
+        Map<EnrichmentType, List<?>> map = new EnumMap<>(EnrichmentType.class);
 
         Arrays.stream(enrichmentTypes).forEach(type -> {
                     switch (type) {

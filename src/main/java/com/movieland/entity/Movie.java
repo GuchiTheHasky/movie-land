@@ -74,7 +74,7 @@ public class Movie {
     )
     private List<Genre> genres;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "movie")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "movie")
     private List<Review> reviews;
 
     public void addReview(Review review) {

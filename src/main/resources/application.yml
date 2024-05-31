@@ -5,13 +5,3 @@ spring:
   profiles:
     active: multi
     include: dev
-
-active:
-
-
-
-
-
-
-
-

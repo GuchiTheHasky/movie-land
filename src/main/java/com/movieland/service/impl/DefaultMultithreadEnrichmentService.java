@@ -12,7 +12,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -31,9 +35,6 @@ public class DefaultMultithreadEnrichmentService implements EnrichmentService {
 
     @Override
     public Movie enrichAdditionalInfo(Movie movie, EnrichmentType... enrichmentTypes) {
-        log.info("========================");
-        log.info("secondary");
-        log.info("========================");
         try {
             List<Callable<Object>> tasksList = getCallableTasksList(movie, enrichmentTypes);
             List<Future<Object>> invokedObjects = executor.invokeAll(tasksList, TIME_OUT, TimeUnit.SECONDS);
@@ -77,7 +78,7 @@ public class DefaultMultithreadEnrichmentService implements EnrichmentService {
     }
 
     private Map<EnrichmentType, Object> fetchEnrichmentTypeObjectMap(EnrichmentType[] enrichmentTypes, List<Future<Object>> invokedObjects) throws InterruptedException {
-        Map<EnrichmentType, Object> enrichmentTypeObjectMap = new HashMap<>();
+        Map<EnrichmentType, Object> enrichmentTypeObjectMap = new EnumMap<>(EnrichmentType.class);
 
         for (int i = 0; i < enrichmentTypes.length; i++) {
             Future<Object> futures = invokedObjects.get(i);
