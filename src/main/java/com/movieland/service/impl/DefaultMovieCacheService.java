@@ -22,12 +22,13 @@ public class DefaultMovieCacheService implements MovieCacheService {
     private final ConcurrentHashMap<Integer, SoftReference<MovieFullInfoDto>> movieCache = new ConcurrentHashMap<>();
 
     @Override
-    public MovieFullInfoDto getFromCache(int movieId, Currency currency) {
+    public MovieFullInfoDto findInCache(int movieId, Currency currency) {
         SoftReference<MovieFullInfoDto> reference = movieCache.get(movieId);
 
         if (reference != null) {
             MovieFullInfoDto cachedMovie = reference.get();
                 if (currency != null) {
+                    assert cachedMovie != null;
                     double price = currencyConverterService.convertFromUah(cachedMovie.getPrice(), currency);
                     cachedMovie.setPrice(price);
                 }
@@ -37,7 +38,7 @@ public class DefaultMovieCacheService implements MovieCacheService {
     }
 
     @Override
-    public MovieFullInfoDto handleCacheIfAbsent(int movieId, MovieFullInfoDto movie) {
+    public MovieFullInfoDto cacheAndReturn(int movieId, MovieFullInfoDto movie) {
         movieCache.putIfAbsent(movieId, new SoftReference<>(movie));
         return movie;
     }

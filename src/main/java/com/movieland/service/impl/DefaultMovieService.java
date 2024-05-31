@@ -1,16 +1,16 @@
 package com.movieland.service.impl;
 
+import com.movieland.common.Currency;
 import com.movieland.dto.MovieAdminDto;
 import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.entity.Country;
+import com.movieland.entity.EnrichmentType;
 import com.movieland.entity.Genre;
 import com.movieland.entity.Movie;
 import com.movieland.exception.MovieNotFoundException;
 import com.movieland.mapper.MovieMapper;
 import com.movieland.repository.MovieRepository;
-import com.movieland.service.CountryService;
-import com.movieland.service.GenreService;
-import com.movieland.service.MovieService;
+import com.movieland.service.*;
 import com.movieland.web.controller.validation.SortOrderPrice;
 import com.movieland.web.controller.validation.SortOrderRating;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Slf4j
 @Service
@@ -29,6 +29,9 @@ public class DefaultMovieService implements MovieService {
 
     private final GenreService genreService;
     private final CountryService countryService;
+    private final MovieCacheService movieCacheService;
+    private final CurrencyConverterService currencyConverterService;
+    private final EnrichmentService enrichmentService;
 
     private final MovieRepository movieRepository;
     private final MovieMapper movieMapper;
@@ -53,13 +56,31 @@ public class DefaultMovieService implements MovieService {
     }
 
     @Override
-    public Movie findMovieById(int movieId) {
-        Optional<Movie> movieOptional = movieRepository.findById(movieId);
-        if (movieOptional.isEmpty()) {
-            throw new MovieNotFoundException(movieId);
+    @Transactional(readOnly = true)
+    public MovieFullInfoDto findMovieById(int movieId, Currency currency) {
+        MovieFullInfoDto cachedMovie = movieCacheService.findInCache(movieId, currency);
+        if (cachedMovie != null) {
+            return cachedMovie;
         }
-        return movieOptional.get();
+
+        Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new MovieNotFoundException(movieId));
+
+        assignCurrencyConversion(currency, movie);
+        enrichmentService.enrichAdditionalInfo(movie, EnrichmentType.COUNTRY);
+
+        MovieFullInfoDto movieDto = movieMapper.toMovieFullInfoDto(movie);
+        movieMapper.postMappingToMovieFullInfoDto(movieDto, movie);
+
+        return movieCacheService.cacheAndReturn(movieId, movieDto);
     }
+
+    private void assignCurrencyConversion(Currency currency, Movie movie) {
+        if (currency != null) {
+            double price = currencyConverterService.convertFromUah(movie.getPrice(), currency);
+            movie.setPrice(price);
+        }
+    }
+
 
     @Override
     public void saveMovie(MovieAdminDto movieAdminDto) {
@@ -82,13 +103,17 @@ public class DefaultMovieService implements MovieService {
 
     @Override
     @Transactional
-    public Movie updateMovie(int id, MovieAdminDto movieAdminDto) {
+    public MovieFullInfoDto update(int id, MovieAdminDto movieAdminDto) {
         Movie movie = findMovieByReferenceId(id);
 
         List<Genre> genres = genreService.findALlById(movieAdminDto.getGenres());
         List<Country> countries = countryService.findAllCountriesById(movieAdminDto.getCountries());
 
-        return movieRepository.save(movieMapper.update(movie, movieAdminDto, countries, genres));
+        Movie updatedMovie = movieMapper.update(movie, movieAdminDto, countries, genres);
+        MovieFullInfoDto movieFullInfoDto = movieMapper.toMovieFullInfoDto(updatedMovie);
+
+        movieRepository.save(updatedMovie);
+        return movieCacheService.cacheAndReturn(id, movieFullInfoDto);
     }
 
     @Override
@@ -110,6 +135,8 @@ public class DefaultMovieService implements MovieService {
     public List<Movie> findRandomMovies() {
         return movieRepository.findThreeRandomMovies();
     }
+
+
 
     private Pair<String, String> validateQuery(SortOrderRating rating, SortOrderPrice price) {
 

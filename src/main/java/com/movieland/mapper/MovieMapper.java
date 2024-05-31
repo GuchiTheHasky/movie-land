@@ -6,6 +6,8 @@ import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.entity.Country;
 import com.movieland.entity.Genre;
 import com.movieland.entity.Movie;
+import com.movieland.entity.Review;
+import org.hibernate.Hibernate;
 import org.mapstruct.Mapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -19,7 +21,25 @@ public interface MovieMapper {
 
     List<MovieDto> toDto(List<Movie> movies);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
+    @Mapping(target = "countries", ignore = true)
+    @Mapping(target = "genres", ignore = true)
     MovieFullInfoDto toMovieFullInfoDto(Movie movie);
+
+    default void postMappingToMovieFullInfoDto(@MappingTarget MovieFullInfoDto movieDto, Movie movie) {
+        if (Hibernate.isInitialized(movie.getCountries())) {
+            movieDto.setCountries(movie.getCountries());
+        }
+
+        if (Hibernate.isInitialized(movie.getGenres())) {
+            movieDto.setGenres(movie.getGenres());
+        }
+
+        if (Hibernate.isInitialized(movie.getReviews())) {
+            movieDto.setReviews(movie.getReviews());
+        }
+    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "reviews", ignore = true)

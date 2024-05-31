@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Builder
 @Entity
 @Table(name = "reviews")
