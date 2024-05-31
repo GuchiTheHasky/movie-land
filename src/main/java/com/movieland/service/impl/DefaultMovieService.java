@@ -4,6 +4,7 @@ import com.movieland.common.Currency;
 import com.movieland.dto.MovieAdminDto;
 import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.entity.Country;
+import com.movieland.entity.EnrichmentType;
 import com.movieland.entity.Genre;
 import com.movieland.entity.Movie;
 import com.movieland.exception.MovieNotFoundException;
@@ -15,6 +16,7 @@ import com.movieland.web.controller.validation.SortOrderRating;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,7 +67,7 @@ public class DefaultMovieService implements MovieService {
         Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new MovieNotFoundException(movieId));
 
         assignCurrencyConversion(currency, movie);
-        enrichmentService.enrichAdditionalInfo(movieId, movie);
+        enrichmentService.enrichAdditionalInfo(movie, EnrichmentType.values());
 
         MovieFullInfoDto movieDto = movieMapper.toMovieFullInfoDto(movie);
 
