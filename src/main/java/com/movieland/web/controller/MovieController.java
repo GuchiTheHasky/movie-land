@@ -4,11 +4,13 @@ import com.movieland.common.Currency;
 import com.movieland.dto.MovieAdminDto;
 import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.mapper.MovieMapper;
+import com.movieland.service.MovieCacheService;
 import com.movieland.web.controller.validation.SortOrderPrice;
 import com.movieland.web.controller.validation.SortOrderRating;
 import com.movieland.dto.MovieDto;
 import com.movieland.service.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

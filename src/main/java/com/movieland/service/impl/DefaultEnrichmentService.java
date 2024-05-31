@@ -1,57 +1,70 @@
 package com.movieland.service.impl;
 
-import com.movieland.entity.Country;
-import com.movieland.entity.Genre;
-import com.movieland.entity.Movie;
-import com.movieland.entity.Review;
+import com.movieland.entity.*;
 import com.movieland.repository.CountryRepository;
 import com.movieland.repository.GenreRepository;
 import com.movieland.repository.ReviewRepository;
 import com.movieland.service.EnrichmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.*;
 
 @Slf4j
 @Service
+@Profile("single")
 @RequiredArgsConstructor
 public class DefaultEnrichmentService implements EnrichmentService {
-
-    private static final Integer TIME_OUT = 5;
-
-    private final ExecutorService executor;
 
     private final GenreRepository genreRepository;
     private final CountryRepository countryRepository;
     private final ReviewRepository reviewRepository;
 
-
     @Override
-    public void enrichAdditionalInfo(int movieId, Movie movie) {
-        try {
-            Callable<List<Genre>> genreTask = () -> genreRepository.findByMovieId(movieId);
-            Callable<List<Country>> countriesTask = () -> countryRepository.findByMovieId(movieId);
-            Callable<List<Review>> reviewsTask = () -> reviewRepository.findByMovieId(movieId);
+    public Movie enrichAdditionalInfo(Movie movie, EnrichmentType... enrichmentTypes) {
+        Map<EnrichmentType, List<?>> map = getAdditionalList(movie, enrichmentTypes);
 
-            List<Genre> genresFuture = executor.invokeAny(Collections.singleton(genreTask), TIME_OUT, TimeUnit.SECONDS);
-            List<Country> countriesFuture = executor.invokeAny(Collections.singleton(countriesTask), TIME_OUT, TimeUnit.SECONDS);
-            List<Review> reviewsFuture = executor.invokeAny(Collections.singleton(reviewsTask), TIME_OUT, TimeUnit.SECONDS);
+        List<Genre> genres = (List<Genre>) getAdditionalInfoByType(EnrichmentType.GENRE, map);
+        List<Country> countries = (List<Country>) getAdditionalInfoByType(EnrichmentType.COUNTRY, map);
+        List<Review> reviews = (List<Review>) getAdditionalInfoByType(EnrichmentType.REVIEW, map);
 
-            enrichInfo(movie, genresFuture, countriesFuture, reviewsFuture);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            log.error("Error fetching data: ", e);
-            Thread.currentThread().interrupt();
-        }
+        return enrichInfo(movie, genres, countries, reviews);
     }
 
-    private void enrichInfo(Movie movie, List<Genre> genresFuture, List<Country> countriesFuture, List<Review> reviewsFuture) {
-        movie.setGenres(genresFuture);
-        movie.setCountries(countriesFuture);
-        movie.setReviews(reviewsFuture);
+    private Map<EnrichmentType, List<?>> getAdditionalList(Movie movie, EnrichmentType[] enrichmentTypes) {
+        Map<EnrichmentType, List<?>> map = new EnumMap<>(EnrichmentType.class);
+
+        Arrays.stream(enrichmentTypes).forEach(type -> {
+                    switch (type) {
+                        case GENRE:
+                            map.put(type, genreRepository.findByMovieId(movie.getId()));
+                            log.info("Found genres for movie: {}", movie.getId());
+                            break;
+                        case COUNTRY:
+                            map.put(type, countryRepository.findByMovieId(movie.getId()));
+                            log.info("Found countries for movie: {}", movie.getId());
+                            break;
+                        case REVIEW:
+                            map.put(type, reviewRepository.findByMovieId(movie.getId()));
+                            log.info("Found review for movie: {}", movie.getId());
+                            break;
+                    }
+                }
+        );
+        return map;
+    }
+
+    private List<?> getAdditionalInfoByType(EnrichmentType type, Map<EnrichmentType, List<?>> map) {
+        return map.get(type).isEmpty() ? List.of() : map.get(type);
+    }
+
+    private Movie enrichInfo(Movie movie, List<Genre> genres, List<Country> countries, List<Review> reviews) {
+        if (!genres.isEmpty()) movie.setGenres(genres);
+        if (!countries.isEmpty()) movie.setCountries(countries);
+        if (!reviews.isEmpty()) movie.setReviews(reviews);
+        return movie;
     }
 
 }

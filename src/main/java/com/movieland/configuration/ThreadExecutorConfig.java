@@ -25,6 +25,7 @@ public class ThreadExecutorConfig {
                     callable.call();
                 } catch (Exception e) {
                     log.error("Error task executing:", e);
+                    Thread.currentThread().interrupt();
                 }
 
             });
