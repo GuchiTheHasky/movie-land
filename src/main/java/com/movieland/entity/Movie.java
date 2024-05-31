@@ -46,7 +46,7 @@ public class Movie {
     @Column(name = "picture_path")
     private String picturePath;
 
-    @ManyToMany(cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "movies_countries_map",
             joinColumns = @JoinColumn(
@@ -60,7 +60,7 @@ public class Movie {
     )
     private List<Country> countries;
 
-    @ManyToMany(cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "movies_genre_map",
             joinColumns = @JoinColumn(

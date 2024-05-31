@@ -66,9 +66,10 @@ public class DefaultMovieService implements MovieService {
         Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new MovieNotFoundException(movieId));
 
         assignCurrencyConversion(currency, movie);
-        enrichmentService.enrichAdditionalInfo(movie, EnrichmentType.values());
+        enrichmentService.enrichAdditionalInfo(movie, EnrichmentType.COUNTRY);
 
         MovieFullInfoDto movieDto = movieMapper.toMovieFullInfoDto(movie);
+        movieMapper.postMappingToMovieFullInfoDto(movieDto, movie);
 
         return movieCacheService.cacheAndReturn(movieId, movieDto);
     }

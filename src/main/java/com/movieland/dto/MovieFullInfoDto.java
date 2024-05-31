@@ -2,6 +2,7 @@ package com.movieland.dto;
 
 import com.movieland.entity.Country;
 import com.movieland.entity.Genre;
+import com.movieland.entity.Review;
 import lombok.Setter;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,5 +34,5 @@ public class MovieFullInfoDto {
 
     private List<Genre> genres;
 
-    private List<ReviewDto> reviews;
+    private List<Review> reviews;
 }
