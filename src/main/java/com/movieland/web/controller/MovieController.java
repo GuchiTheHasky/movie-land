@@ -3,15 +3,19 @@ package com.movieland.web.controller;
 import com.movieland.common.Currency;
 import com.movieland.dto.MovieAdminDto;
 import com.movieland.dto.MovieFullInfoDto;
+import com.movieland.exception.MovieIncomeDataException;
+import com.movieland.exception.MovieNotFoundException;
 import com.movieland.mapper.MovieMapper;
 import com.movieland.web.controller.validation.SortOrderPrice;
 import com.movieland.web.controller.validation.SortOrderRating;
 import com.movieland.dto.MovieDto;
 import com.movieland.service.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +49,8 @@ public class MovieController {
     public MovieFullInfoDto findMovieById(
             @PathVariable int movieId,
             @RequestParam(required = false) Currency currency) {
-        return movieService.findMovieById(movieId, currency);
+        MovieFullInfoDto movie = movieService.findMovieById(movieId, currency);
+        return movie;
     }
 
     @PutMapping("/{id}")
@@ -61,5 +66,17 @@ public class MovieController {
     @DeleteMapping("/{id}")
     public void deleteMovie(@PathVariable int id) {
         movieService.deleteMovie(id);
+    }
+
+    @ExceptionHandler(MovieIncomeDataException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleMovieIncomeDataException(MovieIncomeDataException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(MovieNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleMovieNotFoundExceptionException(MovieNotFoundException ex) {
+        return Map.of("error", ex.getMessage());
     }
 }

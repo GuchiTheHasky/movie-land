@@ -10,13 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
 
 @Slf4j
 @Service
@@ -26,18 +24,20 @@ public class DefaultMultithreadEnrichmentService implements EnrichmentService {
 
     private static final Integer TIME_OUT = 5;
 
-    private final ExecutorService executor;
+    private final ExecutorService executorService;
 
     private final GenreRepository genreRepository;
     private final CountryRepository countryRepository;
     private final ReviewRepository reviewRepository;
 
-
     @Override
+    @Transactional
     public Movie enrichAdditionalInfo(Movie movie, EnrichmentType... enrichmentTypes) {
+
         try {
             List<Callable<Object>> tasksList = getCallableTasksList(movie, enrichmentTypes);
-            List<Future<Object>> invokedObjects = executor.invokeAll(tasksList, TIME_OUT, TimeUnit.SECONDS);
+            List<Callable<Object>> tasks = tasksList.stream().filter(Objects::nonNull).toList();
+            List<Future<Object>> invokedObjects = executorService.invokeAll(tasks, TIME_OUT, TimeUnit.SECONDS);
             log.info("Enrichment tasks invoked successfully");
 
             Map<EnrichmentType, Object> enrichmentTypeObjectMap = fetchEnrichmentTypeObjectMap(enrichmentTypes, invokedObjects);
@@ -60,17 +60,26 @@ public class DefaultMultithreadEnrichmentService implements EnrichmentService {
         Arrays.stream(enrichmentTypes).forEach(type -> {
                     switch (type) {
                         case GENRE:
-                            tasks.add(() -> genreRepository.findByMovieId(movie.getId()));
-                            log.info("Added Genre enrichment task for movie: {}", movie.getId());
+                            tasks.add(() -> {
+                                List<Genre> genres = genreRepository.findByMovieId(movie.getId());
+                                log.info("Data fetched successfully for type: GENRE");
+                                return genres;
+                            });
                             break;
                         case COUNTRY:
-                            tasks.add(() -> countryRepository.findByMovieId(movie.getId()));
-                            log.info("Added Country enrichment task for movie: {}", movie.getId());
+                            tasks.add(() -> {
+                                List<Country> countries = countryRepository.findByMovieId(movie.getId());
+                                log.info("Data fetched successfully for type: COUNTRY");
+                                return countries;
+                            });
                             break;
                         case REVIEW:
-                            tasks.add(() -> reviewRepository.findByMovieId(movie.getId()));
-                            log.info("Added Review enrichment task for movie: {}", movie.getId());
-                            break;
+                            tasks.add(() -> {
+                                List<Review> reviews = reviewRepository.findByMovieId(movie.getId());
+
+                                log.info("Data fetched successfully for type: REVIEW");
+                                return reviews;
+                            });
                     }
                 }
         );
@@ -88,7 +97,11 @@ public class DefaultMultithreadEnrichmentService implements EnrichmentService {
                 Object object = futures.get();
                 enrichmentTypeObjectMap.put(type, object);
                 log.info("Data fetched successfully for type: {}", type);
+            } catch (CancellationException e) {
+                log.error("Task was cancelled for type: {}", type, e);
+                throw new EnrichmentException("Task was cancelled for type: " + type, e);
             } catch (ExecutionException e) {
+                log.error("Error fetching data for type: {}", type, e);
                 throw new EnrichmentException("Error fetching data for type: " + type, e);
             }
         }
@@ -100,9 +113,12 @@ public class DefaultMultithreadEnrichmentService implements EnrichmentService {
     }
 
     private Movie enrichInfo(Movie movie, List<Genre> genres, List<Country> countries, List<Review> reviews) {
-        if (!genres.isEmpty()) movie.setGenres(genres);
-        if (!countries.isEmpty()) movie.setCountries(countries);
-        if (!reviews.isEmpty()) movie.setReviews(reviews);
+        if (genres != null && !genres.isEmpty())
+            movie.setGenres(genres);
+        if (countries != null && !countries.isEmpty())
+            movie.setCountries(countries);
+        if (reviews != null && !reviews.isEmpty())
+            movie.setReviews(reviews);
         return movie;
     }
 }

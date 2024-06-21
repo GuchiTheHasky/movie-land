@@ -92,6 +92,20 @@
 
 <!--		Test		-->
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.2.224</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>5.12.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>com.github.database-rider</groupId>
 			<artifactId>rider-spring</artifactId>
 			<version>1.42.0</version>
@@ -122,6 +136,12 @@
 			<groupId>com.vladmihalcea</groupId>
 			<artifactId>db-util</artifactId>
 			<version>1.0.6</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.github.hakky54</groupId>
+			<artifactId>logcaptor</artifactId>
+			<version>2.9.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

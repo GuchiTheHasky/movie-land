@@ -7,9 +7,11 @@ import com.movieland.entity.Country;
 import com.movieland.entity.EnrichmentType;
 import com.movieland.entity.Genre;
 import com.movieland.entity.Movie;
+import com.movieland.exception.MovieIncomeDataException;
 import com.movieland.exception.MovieNotFoundException;
 import com.movieland.mapper.MovieMapper;
 import com.movieland.repository.MovieRepository;
+import com.movieland.repository.projection.MovieProjection;
 import com.movieland.service.*;
 import com.movieland.web.controller.validation.SortOrderPrice;
 import com.movieland.web.controller.validation.SortOrderRating;
@@ -29,7 +31,9 @@ public class DefaultMovieService implements MovieService {
 
     private final GenreService genreService;
     private final CountryService countryService;
+
     private final MovieCacheService movieCacheService;
+
     private final CurrencyConverterService currencyConverterService;
     private final EnrichmentService enrichmentService;
 
@@ -58,20 +62,37 @@ public class DefaultMovieService implements MovieService {
     @Override
     @Transactional(readOnly = true)
     public MovieFullInfoDto findMovieById(int movieId, Currency currency) {
+        validateIncomeData(movieId);
         MovieFullInfoDto cachedMovie = movieCacheService.findInCache(movieId, currency);
         if (cachedMovie != null) {
             return cachedMovie;
         }
 
-        Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new MovieNotFoundException(movieId));
+        MovieProjection movieProjection = movieRepository.findByIdProjection(movieId).orElseThrow(() -> new MovieNotFoundException(movieId));
+        Movie movie = movieMapper.toMovie(movieProjection);
 
         assignCurrencyConversion(currency, movie);
-        enrichmentService.enrichAdditionalInfo(movie, EnrichmentType.COUNTRY);
+        enrichmentService.enrichAdditionalInfo(movie, EnrichmentType.values());
 
         MovieFullInfoDto movieDto = movieMapper.toMovieFullInfoDto(movie);
         movieMapper.postMappingToMovieFullInfoDto(movieDto, movie);
 
         return movieCacheService.cacheAndReturn(movieId, movieDto);
+    }
+
+    private void validateIncomeData(int movieId, Object object) {
+        if (movieId <= 0) {
+            throw new MovieIncomeDataException("Movie id cannot be zero or negative");
+        }
+
+        if (object == null) {
+            throw new MovieIncomeDataException("Income data cannot be null");
+        }
+    }
+    private void validateIncomeData(int movieId) {
+        if (movieId <= 0) {
+            throw new MovieIncomeDataException("Movie id cannot be zero or negative");
+        }
     }
 
     private void assignCurrencyConversion(Currency currency, Movie movie) {
@@ -80,7 +101,6 @@ public class DefaultMovieService implements MovieService {
             movie.setPrice(price);
         }
     }
-
 
     @Override
     public void saveMovie(MovieAdminDto movieAdminDto) {
@@ -104,6 +124,7 @@ public class DefaultMovieService implements MovieService {
     @Override
     @Transactional
     public MovieFullInfoDto update(int id, MovieAdminDto movieAdminDto) {
+        validateIncomeData(id, movieAdminDto);
         Movie movie = findMovieByReferenceId(id);
 
         List<Genre> genres = genreService.findALlById(movieAdminDto.getGenres());
