@@ -6,7 +6,7 @@ import com.movieland.dto.MovieFullInfoDto;
 import com.movieland.entity.Country;
 import com.movieland.entity.Genre;
 import com.movieland.entity.Movie;
-import com.movieland.entity.Review;
+import com.movieland.repository.projection.MovieProjection;
 import org.hibernate.Hibernate;
 import org.mapstruct.Mapping;
 import org.mapstruct.Context;
@@ -21,7 +21,8 @@ public interface MovieMapper {
 
     List<MovieDto> toDto(List<Movie> movies);
 
-    @Mapping(target = "id", ignore = true)
+    Movie toMovie(MovieProjection projection);
+
     @Mapping(target = "reviews", ignore = true)
     @Mapping(target = "countries", ignore = true)
     @Mapping(target = "genres", ignore = true)

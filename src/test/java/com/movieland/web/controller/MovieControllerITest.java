@@ -1,190 +1,189 @@
-//package com.movieland.web.controller;
-//
-//import com.github.database.rider.core.api.dataset.DataSet;
-//import com.movieland.web.AbstractBaseITest;
-//import com.vladmihalcea.sql.SQLStatementCountValidator;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.http.MediaType;
-//
-//import static com.vladmihalcea.sql.SQLStatementCountValidator.assertInsertCount;
-//import static com.vladmihalcea.sql.SQLStatementCountValidator.assertSelectCount;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//
-//
-//class MovieControllerITest extends AbstractBaseITest {
-//
-//    //ENDPOINTS
-//    private static final String ALL_MOVIES_API = "/api/v1/movies";
-//    private static final String ALL_MOVIES_RATING_DESC_API = "/api/v1/movies?rating=desc";
-//    private static final String ALL_MOVIES_PRICE_ASC_API = "/api/v1/movies?price=asc";
-//    private static final String ALL_MOVIES_PRICE_DESC_API = "/api/v1/movies?price=desc";
-//    private static final String ALL_MOVIES_BY_GENRE_CRIME_API = "/api/v1/movies/genre/2";
-//    private static final String ALL_MOVIES_BY_GENRE_DRAMA_PRICE_ASC_API = "/api/v1/movies/genre/1?price=asc";
-//    private static final String ALL_MOVIES_BY_GENRE_DRAMA_PRICE_DESC_API = "/api/v1/movies/genre/1?price=desc";
-//    private static final String ALL_MOVIES_BY_GENRE_DRAMA_RATING_DESC_API = "/api/v1/movies/genre/1?rating=desc";
-//    private static final String FIND_MOVIE_BY_ID_API = "/api/v1/movies/1";
-//    private static final String MOVIE_CONTENT_JSON = "{\n" +
-//                                                     "     \"nameRussian\": \"Побег из Шоушенка\",\n" +
-//                                                     "     \"nameNative\": \"The Shawshank Redemption\",\n" +
-//                                                     "     \"yearOfRelease\": \"1994\",\n" +
-//                                                     "     \"description\": \"Успешный банкир Энди Дюфрейн обвинен в убийстве собственной жены и ее любовника. Оказавшись в тюрьме под названием Шоушенк, он сталкивается с жестокостью и беззаконием, царящими по обе стороны решетки. Каждый, кто попадает в эти стены, становится их рабом до конца жизни. Но Энди, вооруженный живым умом и доброй душой, отказывается мириться с приговором судьбы и начинает разрабатывать невероятно дерзкий план своего освобождения.\",\n" +
-//                                                     "     \"price\": 123.45,\n" +
-//                                                     "     \"rating\": 8.9,\n" +
-//                                                     "     \"picturePath\": \"https://images-na.ssl-images-amazon.com/images/M/MV5BODU4MjU4NjIwNl5BMl5BanBnXkFtZTgwMDU2MjEyMDE@._V1._SY209_CR0,0,140,209_.jpg\",\n" +
-//                                                     "     \"countries\": [1,2],\n" +
-//                                                     "     \"genres\": [1,2,3]\n" +
-//                                                     "}";
-//
-//
-//    //JSONs
-//    private static final String ALL_MOVIES_JSON = "response/movies/all-movies.json";
-//    private static final String ALL_MOVIES_RATING_DESC_JSON = "response/movies/all-movies-rating-desc.json";
-//    private static final String ALL_MOVIES_PRICE_ASC_JSON = "response/movies/all-movies-price-asc.json";
-//    private static final String ALL_MOVIES_PRICE_DESC_JSON = "response/movies/all-movies-price-desc.json";
-//    private static final String ALL_MOVIES_BY_GENRE_CRIME_JSON = "response/movies/all-crime-movies.json";
-//    private static final String ALL_MOVIES_BY_GENRE_DRAMA_PRICE_ASC_JSON = "response/movies/all-drama-movies-price-asc.json";
-//    private static final String ALL_MOVIES_BY_GENRE_DRAMA_PRICE_DESC_JSON = "response/movies/all-drama-movies-price-desc.json";
-//    private static final String ALL_MOVIES_BY_GENRE_DRAMA_RATING_DESC_JSON = "response/movies/all-drama-movies-rating-desc.json";
-//    private static final String FIND_MOVIE_BY_ID_ONE_JSON = "response/movies/movie-by-id-1.json";
-//
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres.yml",
-//            cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void getAllMovies() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(ALL_MOVIES_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(ALL_MOVIES_JSON)));
-//        assertSelectCount(1);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres.yml",
-//            cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testGetAllMoviesRatingDesc() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(ALL_MOVIES_RATING_DESC_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(ALL_MOVIES_RATING_DESC_JSON), true));
-//        assertSelectCount(1);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres.yml",
-//            cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testGetAllMoviesPriceAsc() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(ALL_MOVIES_PRICE_ASC_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(ALL_MOVIES_PRICE_ASC_JSON), true));
-//        assertSelectCount(1);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres.yml",
-//            cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testGetAllMoviesPriceDesc() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(ALL_MOVIES_PRICE_DESC_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(ALL_MOVIES_PRICE_DESC_JSON), true));
-//        assertSelectCount(1);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres.yml",
-//            cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testGetThreeRandomMovies() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(ALL_MOVIES_PRICE_DESC_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(ALL_MOVIES_PRICE_DESC_JSON)));
-//        assertSelectCount(1);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres.yml",
-//            cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testMoviesByGenre() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(ALL_MOVIES_BY_GENRE_CRIME_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(ALL_MOVIES_BY_GENRE_CRIME_JSON)));
-//        assertSelectCount(1);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres.yml",
-//            cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testMoviesByGenrePriceAscending() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(ALL_MOVIES_BY_GENRE_DRAMA_PRICE_ASC_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(ALL_MOVIES_BY_GENRE_DRAMA_PRICE_ASC_JSON), true));
-//        assertSelectCount(1);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres.yml",
-//            cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testMoviesByGenrePriceDescending() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(ALL_MOVIES_BY_GENRE_DRAMA_PRICE_DESC_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(ALL_MOVIES_BY_GENRE_DRAMA_PRICE_DESC_JSON), true));
-//        assertSelectCount(1);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres.yml",
-//            cleanAfter = true, cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testMoviesByGenreRatingDescending() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(ALL_MOVIES_BY_GENRE_DRAMA_RATING_DESC_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(ALL_MOVIES_BY_GENRE_DRAMA_RATING_DESC_JSON), true));
-//        assertSelectCount(1);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/movies_genres_countries_reviews_users.yml",
-//            cleanAfter = true,
-//            cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testGetMovieById() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(get(FIND_MOVIE_BY_ID_API)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(getResponseAsString(FIND_MOVIE_BY_ID_ONE_JSON), true));
-//        assertSelectCount(3);
-//    }
-//
-//    @Test
-//    @DataSet(value = "datasets/to_save_movie.yml",
-//            cleanAfter = true,
-//            cleanBefore = true, skipCleaningFor = "flyway_schema_history")
-//    public void testSaveMovieReceiveOk() throws Exception {
-//        SQLStatementCountValidator.reset();
-//        mockMvc.perform(post(ALL_MOVIES_API)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(MOVIE_CONTENT_JSON))
-//                .andExpect(status().isOk());
-//
-//        assertSelectCount(3);
-//        assertInsertCount(6);
-//
-//    }
-//}
+package com.movieland.web.controller;
+
+import com.movieland.config.H2ServerConfiguration;
+import com.movieland.config.RedisConfiguration;
+import com.movieland.config.TestSecurityConfiguration;
+import com.movieland.dto.MovieFullInfoDto;
+import com.movieland.entity.Country;
+import com.movieland.entity.Genre;
+import com.movieland.entity.Review;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
+
+
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = {TestSecurityConfiguration.class, RedisConfiguration.class, H2ServerConfiguration.class})
+@ActiveProfiles({"test", "multi"})
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class MovieControllerITest {
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @LocalServerPort
+    private int port;
+    private static final int MOVIE_ID = 1;
+    private static final int ZERO_ID = 0;
+    private static final int NEGATIVE_ID = 0;
+    private static final String LOCAL_HOST = "http://localhost:";
+    private static final String PATH = "/api/v1/movies/";
+
+    @Test
+    @Order(1)
+    @SuppressWarnings("squid:S5961") // There are 26 assertions, instead recommend 25
+    @DisplayName("Test - find movie by id, using singe enrichment")
+    void givenMovie_whenFindMovieById_thenReturnMovie() {
+        MovieFullInfoDto expectedMovie = createMovieDto();
+
+        ResponseEntity<MovieFullInfoDto> response = restTemplate.getForEntity(generatePath(MOVIE_ID), MovieFullInfoDto.class);
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertNotNull(response.getBody());
+
+        MovieFullInfoDto actualMovie = response.getBody();
+
+        // Assert movies attributes
+        Assertions.assertEquals(expectedMovie.getNameNative(), actualMovie.getNameNative());
+        Assertions.assertEquals(expectedMovie.getNameRussian(), actualMovie.getNameRussian());
+        Assertions.assertEquals(expectedMovie.getYearOfRelease(), actualMovie.getYearOfRelease());
+        Assertions.assertEquals(expectedMovie.getDescription(), actualMovie.getDescription());
+        Assertions.assertEquals(expectedMovie.getRating(), actualMovie.getRating());
+        Assertions.assertEquals(expectedMovie.getPrice(), actualMovie.getPrice());
+        Assertions.assertEquals(expectedMovie.getPicturePath(), actualMovie.getPicturePath());
+
+        // Assert movies countries
+        List<Country> countries = actualMovie.getCountries();
+        int expectedCountriesSize = 3;
+
+        Assertions.assertNotNull(countries);
+        Assertions.assertEquals(expectedCountriesSize, countries.size());
+
+        Assertions.assertEquals("США", countries.get(0).getName());
+        Assertions.assertEquals("Италия", countries.get(1).getName());
+        Assertions.assertEquals("Франция", countries.get(2).getName());
+
+        // Assert movies genres
+        List<Genre> genres = actualMovie.getGenres();
+        int expectedGenresSize = 4;
+
+        Assertions.assertNotNull(genres);
+        Assertions.assertEquals(expectedGenresSize, genres.size());
+
+        Assertions.assertEquals("Комедия", genres.get(0).getName());
+        Assertions.assertEquals("Фантастика", genres.get(1).getName());
+        Assertions.assertEquals("Приключения", genres.get(2).getName());
+        Assertions.assertEquals("Семейный", genres.get(3).getName());
+
+        // Assert movies reviews
+        List<Review> reviews = actualMovie.getReviews();
+        int expectedReviewsSize = 4;
+
+        Assertions.assertNotNull(reviews);
+        Assertions.assertEquals(expectedReviewsSize, reviews.size());
+
+        Assertions.assertEquals("Гениальное кино! Смотришь и думаешь «Так не бывает!», но позже понимаешь, что только так и должно быть...", reviews.get(0).getText());
+        Assertions.assertEquals("Кино это является, безусловно, «со знаком качества»...", reviews.get(1).getText());
+        Assertions.assertEquals("Перестал удивляться тому, что этот фильм занимает сплошь первые места во всевозможных кино рейтингах...", reviews.get(2).getText());
+        Assertions.assertEquals("Много еще можно сказать об этом шедевре...", reviews.get(3).getText());
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Test - return bad request if id 0")
+    void givenZeroId_whenFindById_thenReturnBadRequest() {
+
+        ResponseEntity<MovieFullInfoDto> response =
+                restTemplate.getForEntity(generatePath(ZERO_ID), MovieFullInfoDto.class);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        MovieFullInfoDto actualMovie = response.getBody();
+
+        assert actualMovie != null;
+        Assertions.assertNull(actualMovie.getNameNative());
+        Assertions.assertNull(actualMovie.getNameRussian());
+        Assertions.assertEquals(0, actualMovie.getYearOfRelease());
+        Assertions.assertNull(actualMovie.getDescription());
+        Assertions.assertNull(actualMovie.getRating());
+        Assertions.assertNull(actualMovie.getPrice());
+        Assertions.assertNull(actualMovie.getPicturePath());
+        Assertions.assertNull(actualMovie.getCountries());
+        Assertions.assertNull(actualMovie.getGenres());
+        Assertions.assertNull(actualMovie.getReviews());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Test - return bad request if id is negative")
+    void givenNegativeId_whenFindById_thenReturnBadRequest() throws Exception {
+
+        ResponseEntity<MovieFullInfoDto> response =
+                restTemplate.getForEntity(generatePath(NEGATIVE_ID), MovieFullInfoDto.class);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        MovieFullInfoDto actualMovie = response.getBody();
+
+        assert actualMovie != null;
+        Assertions.assertNull(actualMovie.getNameNative());
+        Assertions.assertNull(actualMovie.getNameRussian());
+        Assertions.assertEquals(0, actualMovie.getYearOfRelease());
+        Assertions.assertNull(actualMovie.getDescription());
+        Assertions.assertNull(actualMovie.getRating());
+        Assertions.assertNull(actualMovie.getPrice());
+        Assertions.assertNull(actualMovie.getPicturePath());
+        Assertions.assertNull(actualMovie.getCountries());
+        Assertions.assertNull(actualMovie.getGenres());
+        Assertions.assertNull(actualMovie.getReviews());
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Test - return not found if movie does not exist")
+    void givenNotExistingId_whenFindById_thenReturnNotFound() {
+        ResponseEntity<MovieFullInfoDto> response =
+                restTemplate.getForEntity(generatePath(Integer.MAX_VALUE), MovieFullInfoDto.class);
+
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+        MovieFullInfoDto actualMovie = response.getBody();
+
+        assert actualMovie != null;
+        Assertions.assertNull(actualMovie.getNameNative());
+        Assertions.assertNull(actualMovie.getNameRussian());
+        Assertions.assertEquals(0, actualMovie.getYearOfRelease());
+        Assertions.assertNull(actualMovie.getDescription());
+        Assertions.assertNull(actualMovie.getRating());
+        Assertions.assertNull(actualMovie.getPrice());
+        Assertions.assertNull(actualMovie.getPicturePath());
+        Assertions.assertNull(actualMovie.getCountries());
+        Assertions.assertNull(actualMovie.getGenres());
+        Assertions.assertNull(actualMovie.getReviews());
+    }
+
+    private String generatePath(int id) {
+        String template = "%s%d%s%d";
+        return String.format(template, LOCAL_HOST, port, PATH, id);
+    }
+
+    private MovieFullInfoDto createMovieDto() {
+        return MovieFullInfoDto.builder()
+                .nameRussian("Пятьдесят оттенков черного")
+                .nameNative("Fifty Shades of Black")
+                .yearOfRelease(2016)
+                .description("Феномен успеха эротической мелодрамы «Пятьдесят оттенков серого» многим не дает покоя: одни удивляются, другие возмущаются, а третьи открыто или тайно ждут не дождутся продолжения нашумевшей истории...")
+                .rating(1.0)
+                .price(100.0)
+                .picturePath("https://uafilm.pro/3820-pyatdesyat-vdtnkv-chornogo.html")
+                .build();
+    }
+}

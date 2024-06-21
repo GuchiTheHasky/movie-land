@@ -1,0 +1,41 @@
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+  datasource:
+#    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:file:~/.halo/db/halo
+#    username: admin
+#    password: 123456
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;MODE=PostgreSQL;
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:h2/initial_tables.sql
+      data-locations: classpath:h2/initial_data.sql
+#      Вимикає основний yml
+#  main:
+#    allow-bean-definition-overriding: true
+
+  flyway:
+    enabled: false
+
+#logging:
+#  level:
+#    root: INFO
+#    org.springframework.jdbc.core.JdbcTemplate: DEBUG
+#    org.springframework.jdbc.datasource: DEBUG
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type: TRACE
